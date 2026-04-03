@@ -1,907 +1,729 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio — Creative Design</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <title>Studio — Creative Agency</title>
   <style>
-    /* ─── Reset ────────────────────────────────────────────── */
+    /* ─── Reset ─────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    img { display: block; width: 100%; }
-    a { text-decoration: none; color: inherit; }
 
-    /* ─── Variables ─────────────────────────────────────────── */
+    /* ─── Tokens ─────────────────────────────────────────── */
     :root {
-      --bg:       #f4f3ed;
-      --ink:      #111111;
-      --ink-dim:  #666666;
-      --ink-xdim: #aaaaaa;
-      --border:   #d8d7d0;
-      --white:    #ffffff;
-      --serif:    'DM Serif Display', Georgia, serif;
-      --sans:     'Inter', system-ui, sans-serif;
-      --ease:     cubic-bezier(0.76, 0, 0.24, 1);
+      --bg:     #f5f5f0;
+      --ink:    #181818;
+      --dim:    #888;
+      --border: rgba(0,0,0,0.12);
+      --font:   'Courier New', Courier, monospace;
+      --fs:     13px;
+      --lh:     1.5;
+    }
+    [data-theme="dark"] {
+      --bg:     #181818;
+      --ink:    #f5f5f0;
+      --border: rgba(255,255,255,0.1);
     }
 
     body {
       background: var(--bg);
       color: var(--ink);
-      font-family: var(--sans);
-      font-size: 13px;
-      line-height: 1.5;
-      overflow-x: hidden;
+      font-family: var(--font);
+      font-size: var(--fs);
+      line-height: var(--lh);
       cursor: none;
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
     }
 
-    /* ─── Custom Cursor ─────────────────────────────────────── */
-    .cursor {
+    /* ─── Cursor ─────────────────────────────────────────── */
+    #cursor {
       position: fixed;
-      width: 8px;
-      height: 8px;
+      width: 10px; height: 10px;
       background: var(--ink);
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: transform 0.1s, width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s;
+      transform: translate(-50%,-50%);
+      transition: width .3s, height .3s, background .3s;
     }
-    .cursor-ring {
-      position: fixed;
-      width: 36px;
-      height: 36px;
-      border: 1px solid rgba(17,17,17,0.4);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: transform 0.15s var(--ease), width 0.4s var(--ease), height 0.4s var(--ease), border-color 0.3s;
-    }
-    body.hovering .cursor { width: 0; height: 0; }
-    body.hovering .cursor-ring {
-      width: 64px; height: 64px;
-      border-color: var(--ink);
-    }
+    #cursor.expand { width: 60px; height: 60px; background: transparent;
+      border: 1px solid var(--ink); }
 
-    /* ─── Nav ───────────────────────────────────────────────── */
-    nav {
+    /* ─── Hover image (follows cursor) ───────────────────── */
+    #hover-img {
+      position: fixed;
+      width: 280px;
+      aspect-ratio: 4/3;
+      pointer-events: none;
+      z-index: 500;
+      opacity: 0;
+      transform: translate(-50%,-50%) scale(0.92);
+      transition: opacity 0.35s, transform 0.35s;
+      overflow: hidden;
+    }
+    #hover-img.visible { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    #hover-img img { width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(100%); }
+
+    /* ─── Nav ────────────────────────────────────────────── */
+    header {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 24px 32px;
-      mix-blend-mode: multiply;
+      z-index: 200;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      transition: background 0.4s;
     }
-    .nav-logo {
-      font-family: var(--sans);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+    .nav-logo { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+    nav {
+      display: flex; gap: 32px;
     }
+    nav a {
+      font-size: 11px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink);
+      text-decoration: none; transition: opacity .2s;
+    }
+    nav a:hover { opacity: 0.45; }
     .nav-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 2px;
+      display: flex; justify-content: flex-end; align-items: center; gap: 16px;
     }
-    .nav-time {
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.05em;
-      color: var(--ink-dim);
-      font-variant-numeric: tabular-nums;
+    .theme-toggle {
+      font-family: var(--font);
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      background: none; border: 1px solid var(--border);
+      color: var(--ink); padding: 4px 10px; cursor: none;
+      transition: background .2s, color .2s;
     }
-    .nav-status {
+    .theme-toggle:hover { background: var(--ink); color: var(--bg); }
+    .nav-time { font-size: 10px; color: var(--dim); letter-spacing: 0.05em;
+      font-variant-numeric: tabular-nums; }
+
+    /* ─── Strips (animated horizontal bars) ──────────────── */
+    .strips {
+      position: relative;
+      margin-top: 57px; /* header height */
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .strip {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--ink-dim);
-      letter-spacing: 0.03em;
-    }
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #2ecc71;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    /* ─── Hero ──────────────────────────────────────────────── */
-    .hero {
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 32px;
-      padding-top: 120px;
-      position: relative;
       border-bottom: 1px solid var(--border);
-    }
-    .hero-label {
-      position: absolute;
-      top: 50%;
-      right: 32px;
-      transform: translateY(-50%) rotate(90deg);
-      transform-origin: right center;
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
+      height: 42px;
+      overflow: hidden;
       white-space: nowrap;
     }
-    .hero-heading {
-      font-family: var(--serif);
-      font-size: clamp(52px, 9vw, 130px);
-      line-height: 0.92;
-      letter-spacing: -0.02em;
-      max-width: 80vw;
-      margin-bottom: 48px;
-    }
-    .hero-heading em {
-      font-style: italic;
-      color: var(--ink-dim);
-    }
-    .hero-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .hero-desc {
-      max-width: 320px;
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--ink-dim);
-    }
-    .hero-meta {
-      text-align: right;
-    }
-    .hero-meta p {
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      color: var(--ink-xdim);
-      margin-bottom: 2px;
-    }
-    .hero-meta strong {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .scroll-hint {
-      position: absolute;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
+    .strip:last-child { border-bottom: none; }
+    .strip-inner {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--ink-xdim);
-      animation: float 3s ease-in-out infinite;
-    }
-    .scroll-hint::after {
-      content: '';
-      width: 1px;
-      height: 48px;
-      background: linear-gradient(to bottom, var(--ink-xdim), transparent);
-    }
-    @keyframes float {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(6px); }
-    }
-
-    /* ─── Section Label ─────────────────────────────────────── */
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--ink-xdim);
-      margin-bottom: 48px;
-    }
-    .section-label::before {
-      content: '';
-      width: 24px;
-      height: 1px;
-      background: var(--ink-xdim);
-    }
-
-    /* ─── Works Section ─────────────────────────────────────── */
-    .works {
-      padding: 80px 32px;
-      border-bottom: 1px solid var(--border);
-    }
-    .works-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 64px;
-    }
-    .works-heading {
-      font-family: var(--serif);
-      font-size: clamp(32px, 5vw, 64px);
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-    .works-count {
-      font-size: 11px;
-      color: var(--ink-dim);
-      letter-spacing: 0.05em;
-    }
-
-    /* Project list */
-    .project-list { display: flex; flex-direction: column; }
-    .project-item {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 0;
-      border-top: 1px solid var(--border);
-      padding: 0;
-      cursor: none;
-      overflow: hidden;
-      position: relative;
+      animation: marquee 22s linear infinite;
     }
-    .project-item:last-child { border-bottom: 1px solid var(--border); }
-
-    .project-info {
-      padding: 40px 0;
-      padding-right: 48px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      z-index: 1;
-    }
-    .project-num {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: var(--ink-xdim);
-      margin-bottom: 16px;
-    }
-    .project-title {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3.5vw, 52px);
-      line-height: 1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      transition: transform 0.6s var(--ease);
-    }
-    .project-item:hover .project-title { transform: translateX(8px); }
-    .project-tags {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .tag {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      border-radius: 100px;
-    }
-    .project-year {
-      font-size: 11px;
-      color: var(--ink-xdim);
-      letter-spacing: 0.05em;
-    }
-
-    .project-image-wrap {
-      overflow: hidden;
-      aspect-ratio: 4/3;
-      align-self: center;
-    }
-    .project-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(100%) contrast(1.05);
-      transform: scale(1.05);
-      transition: transform 0.8s var(--ease), filter 0.6s var(--ease);
-    }
-    .project-item:hover .project-image-wrap img {
-      transform: scale(1);
-      filter: grayscale(80%) contrast(1.1);
-    }
-    .project-arrow {
-      position: absolute;
-      bottom: 40px;
-      right: 0;
-      font-size: 20px;
-      color: var(--ink-dim);
-      transform: translateX(-8px);
-      opacity: 0;
-      transition: transform 0.4s var(--ease), opacity 0.4s;
-    }
-    .project-item:hover .project-arrow { transform: translateX(0); opacity: 1; }
-
-    /* ─── Services Section ──────────────────────────────────── */
-    .services {
-      padding: 80px 32px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      border-bottom: 1px solid var(--border);
-      align-items: start;
-    }
-    .services-left {}
-    .services-heading {
-      font-family: var(--serif);
-      font-size: clamp(28px, 4vw, 56px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-    }
-    .services-heading em { font-style: italic; color: var(--ink-dim); }
-    .services-desc {
-      font-size: 13px;
-      line-height: 1.75;
-      color: var(--ink-dim);
-      max-width: 380px;
-    }
-    .services-right {}
-    .service-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 0;
-      border-top: 1px solid var(--border);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: none;
-      transition: padding-left 0.3s var(--ease);
-    }
-    .service-item:last-child { border-bottom: 1px solid var(--border); }
-    .service-item:hover { padding-left: 12px; }
-    .service-item span { color: var(--ink-xdim); font-size: 11px; }
-
-    /* ─── About Section ─────────────────────────────────────── */
-    .about {
-      padding: 80px 32px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      border-bottom: 1px solid var(--border);
-    }
-    .about-image-wrap {
-      overflow: hidden;
-      aspect-ratio: 3/4;
-    }
-    .about-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(100%);
-      transition: transform 0.8s var(--ease);
-    }
-    .about-image-wrap:hover img { transform: scale(1.03); }
-    .about-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .about-heading {
-      font-family: var(--serif);
-      font-size: clamp(28px, 4vw, 52px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 32px;
-    }
-    .about-heading em { font-style: italic; color: var(--ink-dim); }
-    .about-body {
-      font-size: 13px;
-      line-height: 1.8;
-      color: var(--ink-dim);
-      margin-bottom: 48px;
-    }
-    .about-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      padding-top: 40px;
-      border-top: 1px solid var(--border);
-    }
-    .stat-num {
-      font-family: var(--serif);
-      font-size: 40px;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .stat-label {
-      font-size: 11px;
-      color: var(--ink-dim);
-      letter-spacing: 0.05em;
-    }
-
-    /* ─── Awards / Ticker ────────────────────────────────────── */
-    .ticker-wrap {
-      overflow: hidden;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 20px 0;
-      background: var(--ink);
-      color: var(--bg);
-    }
-    .ticker {
-      display: flex;
-      white-space: nowrap;
-      animation: ticker 18s linear infinite;
-    }
-    .ticker-item {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      padding-right: 64px;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-    .ticker-item::after {
-      content: '✦';
-      opacity: 0.4;
-    }
-    @keyframes ticker {
+    .strip:nth-child(2n) .strip-inner { animation-direction: reverse; animation-duration: 28s; }
+    .strip:nth-child(3n) .strip-inner { animation-duration: 18s; }
+    @keyframes marquee {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
+    .strip-text {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); padding: 0 40px;
+      display: flex; align-items: center; gap: 40px;
+    }
+    .strip-text::after { content: '—'; opacity: 0.4; }
 
-    /* ─── Contact Section ───────────────────────────────────── */
-    .contact {
-      padding: 80px 32px 120px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 40px;
-    }
-    .contact-heading {
-      font-family: var(--serif);
-      font-size: clamp(40px, 7vw, 100px);
-      line-height: 0.95;
-      letter-spacing: -0.03em;
-    }
-    .contact-heading em { font-style: italic; color: var(--ink-dim); }
-    .contact-email {
-      font-size: clamp(14px, 2vw, 20px);
-      font-weight: 400;
-      color: var(--ink-dim);
-      letter-spacing: 0.02em;
+    /* ─── Hero ───────────────────────────────────────────── */
+    .hero {
+      padding: 64px 24px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 4px;
-      transition: color 0.3s, border-color 0.3s;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: end;
     }
-    .contact-email:hover { color: var(--ink); border-color: var(--ink); }
-    .contact-cta {
-      display: inline-flex;
+    .hero-heading {
+      font-size: clamp(36px, 6vw, 80px);
+      font-family: var(--font);
+      font-weight: normal;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .hero-heading .typed-cursor { opacity: 1; animation: blink .7s infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-right {
+      display: flex; flex-direction: column;
+      justify-content: flex-end; gap: 24px;
+    }
+    .hero-desc {
+      font-size: 12px; line-height: 1.8; color: var(--dim);
+      max-width: 360px;
+    }
+    .hero-scroll {
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-scroll::before { content: ''; display: block; width: 24px; height: 1px;
+      background: var(--dim); }
+
+    /* ─── Work Section ───────────────────────────────────── */
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); }
+    .section-count { font-size: 10px; color: var(--dim); }
+
+    .work-list {}
+    .work-item {
+      display: grid;
+      grid-template-columns: 48px 1fr auto auto;
       align-items: center;
-      gap: 12px;
+      gap: 0;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      height: 52px;
+      cursor: none;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .work-item:hover { background: var(--ink); color: var(--bg); }
+    .work-num { font-size: 10px; color: var(--dim); letter-spacing: 0.05em; }
+    .work-item:hover .work-num { color: var(--bg); opacity: 0.5; }
+    .work-title {
+      font-size: clamp(14px, 2.2vw, 22px);
+      letter-spacing: -0.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .work-category {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--dim); padding-right: 48px;
+    }
+    .work-item:hover .work-category { color: var(--bg); opacity: 0.5; }
+    .work-year { font-size: 10px; color: var(--dim); }
+    .work-item:hover .work-year { color: var(--bg); opacity: 0.5; }
+
+    /* ─── Marquee divider ────────────────────────────────── */
+    .big-marquee {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
       background: var(--ink);
       color: var(--bg);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 18px 36px;
-      border-radius: 100px;
-      transition: transform 0.3s var(--ease), background 0.3s;
-      cursor: none;
     }
-    .contact-cta:hover { transform: scale(1.04); background: #222; }
-    .contact-cta-arrow { font-size: 16px; }
+    .big-marquee-inner {
+      display: inline-flex; white-space: nowrap;
+      animation: marquee 14s linear infinite;
+    }
+    .big-marquee-item {
+      font-size: clamp(20px, 3.5vw, 48px);
+      letter-spacing: -0.02em;
+      padding: 0 40px;
+      display: flex; align-items: center; gap: 32px;
+    }
+    .big-marquee-item::after { content: '✦'; font-size: 0.5em; opacity: 0.5; }
 
-    /* ─── Footer ────────────────────────────────────────────── */
+    /* ─── Services ───────────────────────────────────────── */
+    .services {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+    .service-col {
+      padding: 40px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .service-col:last-child { border-right: none; }
+    .service-col-num { font-size: 10px; color: var(--dim); margin-bottom: 20px; }
+    .service-col-title {
+      font-size: clamp(16px, 2vw, 24px);
+      font-weight: normal; line-height: 1.2;
+      margin-bottom: 16px; letter-spacing: -0.01em;
+    }
+    .service-col-list { list-style: none; }
+    .service-col-list li {
+      font-size: 11px; color: var(--dim); padding: 5px 0;
+      border-top: 1px solid var(--border); letter-spacing: 0.03em;
+    }
+
+    /* ─── About row ──────────────────────────────────────── */
+    .about-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .about-left {
+      padding: 48px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .about-heading {
+      font-size: clamp(24px, 4vw, 52px);
+      font-weight: normal; line-height: 1.1;
+      letter-spacing: -0.02em; margin-bottom: 24px;
+    }
+    .about-body { font-size: 12px; line-height: 1.85; color: var(--dim); max-width: 400px; }
+    .about-right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .about-stat {
+      padding: 40px 24px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .about-stat:nth-child(2n) { border-right: none; }
+    .about-stat:nth-child(3), .about-stat:nth-child(4) { border-bottom: none; }
+    .stat-n {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: normal; letter-spacing: -0.03em;
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-l { font-size: 10px; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ─── Footer ─────────────────────────────────────────── */
+    .contact-band {
+      padding: 80px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column; align-items: center; gap: 32px; text-align: center;
+    }
+    .contact-pre { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); }
+    .contact-big {
+      font-size: clamp(32px, 6vw, 80px);
+      font-weight: normal; letter-spacing: -0.03em; line-height: 0.95;
+    }
+    .contact-email {
+      font-size: 13px; color: var(--dim); letter-spacing: 0.05em;
+      text-decoration: none; border-bottom: 1px solid var(--border);
+      padding-bottom: 3px; transition: color .2s, border-color .2s;
+    }
+    .contact-email:hover { color: var(--ink); border-color: var(--ink); }
+
     footer {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; padding: 18px 24px;
       border-top: 1px solid var(--border);
-      padding: 28px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
-    .footer-copy {
-      font-size: 11px;
-      color: var(--ink-xdim);
-      letter-spacing: 0.05em;
+    .footer-left { font-size: 10px; color: var(--dim); letter-spacing: 0.05em; }
+    .footer-center { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .footer-right {
+      display: flex; justify-content: flex-end; gap: 20px;
     }
-    .footer-links {
-      display: flex;
-      gap: 24px;
+    .footer-right a {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--dim); text-decoration: none; transition: color .2s;
     }
-    .footer-links a {
-      font-size: 11px;
-      color: var(--ink-dim);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: color 0.3s;
-    }
-    .footer-links a:hover { color: var(--ink); }
+    .footer-right a:hover { color: var(--ink); }
 
-    /* ─── Fade-in animation ─────────────────────────────────── */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    /* ─── Glitch text ─────────────────────────────────────── */
+    .glitch { position: relative; }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      width: 100%; overflow: hidden;
+      font-size: inherit;
     }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .glitch::before {
+      color: #0ff; clip-path: polygon(0 0,100% 0,100% 33%,0 33%);
+      animation: glitch-a 3.5s infinite; opacity: 0;
+    }
+    .glitch::after {
+      color: #f0f; clip-path: polygon(0 67%,100% 67%,100% 100%,0 100%);
+      animation: glitch-b 3.5s infinite; opacity: 0;
+    }
+    @keyframes glitch-a {
+      0%,90%,100% { opacity:0; transform:none; }
+      91% { opacity:1; transform:translateX(-2px); }
+      92% { opacity:1; transform:translateX(2px); }
+      93% { opacity:0; }
+    }
+    @keyframes glitch-b {
+      0%,93%,100% { opacity:0; transform:none; }
+      94% { opacity:1; transform:translateX(2px); }
+      95% { opacity:1; transform:translateX(-2px); }
+      96% { opacity:0; }
     }
 
-    /* ─── Responsive ────────────────────────────────────────── */
-    @media (max-width: 768px) {
-      nav { padding: 20px; }
-      .hero { padding: 20px; padding-top: 100px; }
-      .hero-label { display: none; }
-      .hero-bottom { flex-direction: column; gap: 24px; align-items: flex-start; }
-      .hero-meta { text-align: left; }
+    /* ─── Fade in ─────────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .7s cubic-bezier(.76,0,.24,1), transform .7s cubic-bezier(.76,0,.24,1);
+    }
+    .reveal.on { opacity:1; transform:none; }
 
-      .works { padding: 60px 20px; }
-      .works-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-      .project-item { grid-template-columns: 1fr; }
-      .project-image-wrap { order: -1; aspect-ratio: 16/9; }
-      .project-info { padding: 24px 0; }
-
-      .services { grid-template-columns: 1fr; gap: 48px; padding: 60px 20px; }
-      .about { grid-template-columns: 1fr; gap: 40px; padding: 60px 20px; }
-      .about-image-wrap { aspect-ratio: 4/3; }
-
-      .contact { padding: 60px 20px 80px; }
-      footer { padding: 20px; flex-direction: column; gap: 16px; text-align: center; }
+    /* ─── Responsive ──────────────────────────────────────── */
+    @media(max-width:768px) {
+      nav { display: none; }
+      .hero { grid-template-columns:1fr; gap:32px; }
+      .services { grid-template-columns:1fr; }
+      .service-col { border-right:none; border-bottom:1px solid var(--border); }
+      .about-row { grid-template-columns:1fr; }
+      .about-left { border-right:none; border-bottom:1px solid var(--border); }
+      .about-right { grid-template-columns:1fr 1fr; }
+      footer { grid-template-columns:1fr; gap:8px; text-align:center; }
+      .footer-right { justify-content:center; }
+      .footer-center { order:-1; }
+      .work-category, .work-year { display:none; }
+      .work-item { grid-template-columns: 36px 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Cursor -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
+<!-- Cursor -->
+<div id="cursor"></div>
 
-  <!-- ── Nav ─────────────────────────────────────────────── -->
+<!-- Hover image -->
+<div id="hover-img"><img src="" alt="" id="hover-img-el" /></div>
+
+<!-- ── Header ──────────────────────────────────────────── -->
+<header>
+  <div class="nav-logo">Studio — KR</div>
   <nav>
-    <div class="nav-logo">Studio&thinsp;—&thinsp;Creative</div>
-    <div class="nav-right">
-      <div class="nav-time" id="navTime">00:00:00 KST</div>
-      <div class="nav-status">
-        <div class="status-dot"></div>
-        <span>프로젝트 수락 중</span>
-      </div>
-    </div>
+    <a href="#work">Work</a>
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
   </nav>
+  <div class="nav-right">
+    <div class="nav-time" id="navTime">00:00:00</div>
+    <button class="theme-toggle" id="themeBtn">Dark</button>
+  </div>
+</header>
 
-  <!-- ── Hero ────────────────────────────────────────────── -->
-  <section class="hero">
-    <div class="hero-label">Scroll to explore</div>
-    <h1 class="hero-heading fade-up">
-      We craft<br>
-      <em>digital</em><br>
-      experiences
-    </h1>
-    <div class="hero-bottom fade-up" style="transition-delay:0.15s">
-      <p class="hero-desc">
-        비주얼 아이덴티티부터 인터랙티브 웹까지,<br>
-        브랜드의 이야기를 의미 있게 전달합니다.
-      </p>
-      <div class="hero-meta">
-        <p>Based in Seoul, KR</p>
-        <strong>GMT+9</strong>
-      </div>
-    </div>
-    <div class="scroll-hint">Scroll</div>
-  </section>
-
-  <!-- ── Works ───────────────────────────────────────────── -->
-  <section class="works">
-    <div class="works-header fade-up">
-      <div>
-        <div class="section-label">Selected Work</div>
-        <h2 class="works-heading">Projects</h2>
-      </div>
-      <div class="works-count">06 Projects</div>
-    </div>
-
-    <div class="project-list">
-
-      <!-- 01 -->
-      <div class="project-item fade-up">
-        <div class="project-info">
-          <div>
-            <div class="project-num">01 / 06</div>
-            <h3 class="project-title">Noir&thinsp;Brand</h3>
-            <div class="project-tags">
-              <span class="tag">Branding</span>
-              <span class="tag">Art Direction</span>
-            </div>
-          </div>
-          <div class="project-year">2024</div>
-          <div class="project-arrow">→</div>
-        </div>
-        <div class="project-image-wrap">
-          <img src="https://picsum.photos/seed/noir/800/600" alt="Noir Brand Project" loading="lazy" />
-        </div>
-      </div>
-
-      <!-- 02 -->
-      <div class="project-item fade-up">
-        <div class="project-info">
-          <div>
-            <div class="project-num">02 / 06</div>
-            <h3 class="project-title">Echo&thinsp;Space</h3>
-            <div class="project-tags">
-              <span class="tag">Web Design</span>
-              <span class="tag">UX/UI</span>
-            </div>
-          </div>
-          <div class="project-year">2024</div>
-          <div class="project-arrow">→</div>
-        </div>
-        <div class="project-image-wrap">
-          <img src="https://picsum.photos/seed/echo/800/600" alt="Echo Space Project" loading="lazy" />
-        </div>
-      </div>
-
-      <!-- 03 -->
-      <div class="project-item fade-up">
-        <div class="project-info">
-          <div>
-            <div class="project-num">03 / 06</div>
-            <h3 class="project-title">Lumen&thinsp;Film</h3>
-            <div class="project-tags">
-              <span class="tag">Motion</span>
-              <span class="tag">Direction</span>
-            </div>
-          </div>
-          <div class="project-year">2023</div>
-          <div class="project-arrow">→</div>
-        </div>
-        <div class="project-image-wrap">
-          <img src="https://picsum.photos/seed/lumen/800/600" alt="Lumen Film Project" loading="lazy" />
-        </div>
-      </div>
-
-      <!-- 04 -->
-      <div class="project-item fade-up">
-        <div class="project-info">
-          <div>
-            <div class="project-num">04 / 06</div>
-            <h3 class="project-title">Forma&thinsp;Type</h3>
-            <div class="project-tags">
-              <span class="tag">Typography</span>
-              <span class="tag">Identity</span>
-            </div>
-          </div>
-          <div class="project-year">2023</div>
-          <div class="project-arrow">→</div>
-        </div>
-        <div class="project-image-wrap">
-          <img src="https://picsum.photos/seed/forma/800/600" alt="Forma Type Project" loading="lazy" />
-        </div>
-      </div>
-
-      <!-- 05 -->
-      <div class="project-item fade-up">
-        <div class="project-info">
-          <div>
-            <div class="project-num">05 / 06</div>
-            <h3 class="project-title">Veil&thinsp;Studio</h3>
-            <div class="project-tags">
-              <span class="tag">Web Dev</span>
-              <span class="tag">Interaction</span>
-            </div>
-          </div>
-          <div class="project-year">2023</div>
-          <div class="project-arrow">→</div>
-        </div>
-        <div class="project-image-wrap">
-          <img src="https://picsum.photos/seed/veil/800/600" alt="Veil Studio Project" loading="lazy" />
-        </div>
-      </div>
-
-      <!-- 06 -->
-      <div class="project-item fade-up">
-        <div class="project-info">
-          <div>
-            <div class="project-num">06 / 06</div>
-            <h3 class="project-title">Arch&thinsp;Collective</h3>
-            <div class="project-tags">
-              <span class="tag">Branding</span>
-              <span class="tag">Web</span>
-            </div>
-          </div>
-          <div class="project-year">2022</div>
-          <div class="project-arrow">→</div>
-        </div>
-        <div class="project-image-wrap">
-          <img src="https://picsum.photos/seed/arch/800/600" alt="Arch Collective Project" loading="lazy" />
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ── Awards Ticker ────────────────────────────────────── -->
-  <div class="ticker-wrap">
-    <div class="ticker" id="ticker">
-      <div class="ticker-item">Awwwards Honorable Mention</div>
-      <div class="ticker-item">CSS Design Awards</div>
-      <div class="ticker-item">FWA of the Day</div>
-      <div class="ticker-item">Site Inspire Featured</div>
-      <div class="ticker-item">Behance Featured</div>
-      <div class="ticker-item">Best Design 2024</div>
-      <div class="ticker-item">Awwwards Honorable Mention</div>
-      <div class="ticker-item">CSS Design Awards</div>
-      <div class="ticker-item">FWA of the Day</div>
-      <div class="ticker-item">Site Inspire Featured</div>
-      <div class="ticker-item">Behance Featured</div>
-      <div class="ticker-item">Best Design 2024</div>
+<!-- ── Animated Strips ─────────────────────────────────── -->
+<div class="strips">
+  <div class="strip">
+    <div class="strip-inner">
+      <span class="strip-text">Art Direction</span>
+      <span class="strip-text">Web Design</span>
+      <span class="strip-text">Branding</span>
+      <span class="strip-text">Motion</span>
+      <span class="strip-text">Development</span>
+      <span class="strip-text">Strategy</span>
+      <span class="strip-text">Art Direction</span>
+      <span class="strip-text">Web Design</span>
+      <span class="strip-text">Branding</span>
+      <span class="strip-text">Motion</span>
+      <span class="strip-text">Development</span>
+      <span class="strip-text">Strategy</span>
     </div>
   </div>
-
-  <!-- ── Services ─────────────────────────────────────────── -->
-  <section class="services">
-    <div class="services-left fade-up">
-      <div class="section-label">What We Do</div>
-      <h2 class="services-heading">
-        Crafting<br>
-        <em>bold</em><br>
-        ideas
-      </h2>
-      <p class="services-desc">
-        전략적 사고와 감각적인 디자인을 결합하여<br>
-        브랜드가 원하는 이야기를 시각적으로 구현합니다.
-        단순히 아름다운 결과물이 아닌,<br>
-        의미 있는 경험을 만들어냅니다.
-      </p>
+  <div class="strip">
+    <div class="strip-inner">
+      <span class="strip-text">Seoul — 2024</span>
+      <span class="strip-text">Creative Studio</span>
+      <span class="strip-text">Since 2016</span>
+      <span class="strip-text">Award-Winning</span>
+      <span class="strip-text">Seoul — 2024</span>
+      <span class="strip-text">Creative Studio</span>
+      <span class="strip-text">Since 2016</span>
+      <span class="strip-text">Award-Winning</span>
+      <span class="strip-text">Seoul — 2024</span>
+      <span class="strip-text">Creative Studio</span>
+      <span class="strip-text">Since 2016</span>
+      <span class="strip-text">Award-Winning</span>
     </div>
-    <div class="services-right fade-up" style="transition-delay:0.1s">
-      <div class="service-item">Art Direction <span>01</span></div>
-      <div class="service-item">Web Design <span>02</span></div>
-      <div class="service-item">UX / UI Design <span>03</span></div>
-      <div class="service-item">Branding &amp; Identity <span>04</span></div>
-      <div class="service-item">Motion Design <span>05</span></div>
-      <div class="service-item">Web Development <span>06</span></div>
+  </div>
+  <div class="strip">
+    <div class="strip-inner">
+      <span class="strip-text">UX/UI Design</span>
+      <span class="strip-text">Identity Systems</span>
+      <span class="strip-text">Interactive</span>
+      <span class="strip-text">Visual Design</span>
+      <span class="strip-text">Print</span>
+      <span class="strip-text">UX/UI Design</span>
+      <span class="strip-text">Identity Systems</span>
+      <span class="strip-text">Interactive</span>
+      <span class="strip-text">Visual Design</span>
+      <span class="strip-text">Print</span>
     </div>
-  </section>
+  </div>
+</div>
 
-  <!-- ── About ────────────────────────────────────────────── -->
-  <section class="about">
-    <div class="about-image-wrap fade-up">
-      <img src="https://picsum.photos/seed/studio/600/800" alt="Studio" loading="lazy" />
+<!-- ── Hero ────────────────────────────────────────────── -->
+<section class="hero">
+  <div>
+    <h1 class="hero-heading glitch" data-text="We design
+experiences
+that matter">
+      <span id="typed-text"></span><span class="typed-cursor">_</span>
+    </h1>
+  </div>
+  <div class="hero-right reveal">
+    <p class="hero-desc">
+      크리에이티브 에이전시입니다. 브랜드 아이덴티티부터
+      인터랙티브 디지털 경험까지, 의미 있는 디자인을 만듭니다.
+    </p>
+    <div class="hero-scroll">Scroll to explore</div>
+  </div>
+</section>
+
+<!-- ── Work ────────────────────────────────────────────── -->
+<div class="section-header" id="work">
+  <span class="section-title">Selected Work</span>
+  <span class="section-count">07 Projects</span>
+</div>
+<div class="work-list">
+
+  <div class="work-item reveal"
+    data-img="https://picsum.photos/seed/p1/560/420">
+    <span class="work-num">01</span>
+    <span class="work-title">Noir Brand System</span>
+    <span class="work-category">Branding</span>
+    <span class="work-year">2024</span>
+  </div>
+
+  <div class="work-item reveal" style="transition-delay:.05s"
+    data-img="https://picsum.photos/seed/p2/560/420">
+    <span class="work-num">02</span>
+    <span class="work-title">Echo Digital Platform</span>
+    <span class="work-category">Web Design</span>
+    <span class="work-year">2024</span>
+  </div>
+
+  <div class="work-item reveal" style="transition-delay:.1s"
+    data-img="https://picsum.photos/seed/p3/560/420">
+    <span class="work-num">03</span>
+    <span class="work-title">Lumen Film Studio</span>
+    <span class="work-category">Motion</span>
+    <span class="work-year">2024</span>
+  </div>
+
+  <div class="work-item reveal" style="transition-delay:.15s"
+    data-img="https://picsum.photos/seed/p4/560/420">
+    <span class="work-num">04</span>
+    <span class="work-title">Forma Typeface</span>
+    <span class="work-category">Typography</span>
+    <span class="work-year">2023</span>
+  </div>
+
+  <div class="work-item reveal" style="transition-delay:.2s"
+    data-img="https://picsum.photos/seed/p5/560/420">
+    <span class="work-num">05</span>
+    <span class="work-title">Veil Architecture</span>
+    <span class="work-category">Identity</span>
+    <span class="work-year">2023</span>
+  </div>
+
+  <div class="work-item reveal" style="transition-delay:.25s"
+    data-img="https://picsum.photos/seed/p6/560/420">
+    <span class="work-num">06</span>
+    <span class="work-title">Arch Collective</span>
+    <span class="work-category">Art Direction</span>
+    <span class="work-year">2023</span>
+  </div>
+
+  <div class="work-item reveal" style="transition-delay:.3s"
+    data-img="https://picsum.photos/seed/p7/560/420">
+    <span class="work-num">07</span>
+    <span class="work-title">Pulse E-Commerce</span>
+    <span class="work-category">UX/UI</span>
+    <span class="work-year">2022</span>
+  </div>
+
+</div>
+
+<!-- ── Big Marquee ─────────────────────────────────────── -->
+<div class="big-marquee">
+  <div class="big-marquee-inner">
+    <span class="big-marquee-item">Awwwards</span>
+    <span class="big-marquee-item">FWA of the Day</span>
+    <span class="big-marquee-item">CSS Design Awards</span>
+    <span class="big-marquee-item">Site Inspire</span>
+    <span class="big-marquee-item">Behance Featured</span>
+    <span class="big-marquee-item">Awwwards</span>
+    <span class="big-marquee-item">FWA of the Day</span>
+    <span class="big-marquee-item">CSS Design Awards</span>
+    <span class="big-marquee-item">Site Inspire</span>
+    <span class="big-marquee-item">Behance Featured</span>
+  </div>
+</div>
+
+<!-- ── Services ────────────────────────────────────────── -->
+<div class="section-header" id="services">
+  <span class="section-title">Services</span>
+</div>
+<div class="services">
+  <div class="service-col reveal">
+    <div class="service-col-num">01</div>
+    <div class="service-col-title">Brand &<br>Identity</div>
+    <ul class="service-col-list">
+      <li>Visual Identity</li>
+      <li>Logo Design</li>
+      <li>Brand Strategy</li>
+      <li>Guidelines</li>
+      <li>Print &amp; Collateral</li>
+    </ul>
+  </div>
+  <div class="service-col reveal" style="transition-delay:.08s">
+    <div class="service-col-num">02</div>
+    <div class="service-col-title">Digital &<br>Interactive</div>
+    <ul class="service-col-list">
+      <li>Web Design</li>
+      <li>UX / UI Design</li>
+      <li>Interaction Design</li>
+      <li>Prototyping</li>
+      <li>Development</li>
+    </ul>
+  </div>
+  <div class="service-col reveal" style="transition-delay:.16s">
+    <div class="service-col-num">03</div>
+    <div class="service-col-title">Motion &<br>Direction</div>
+    <ul class="service-col-list">
+      <li>Art Direction</li>
+      <li>Motion Design</li>
+      <li>Animation</li>
+      <li>Video Production</li>
+      <li>3D &amp; CGI</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── About ────────────────────────────────────────────── -->
+<div class="section-header" id="about">
+  <span class="section-title">About</span>
+</div>
+<div class="about-row">
+  <div class="about-left reveal">
+    <h2 class="about-heading">Design is<br>thinking<br>made visual</h2>
+    <p class="about-body">
+      서울에 기반을 둔 크리에이티브 스튜디오로,
+      브랜드 아이덴티티, 디지털 경험, 모션 디자인 전반에서
+      활동하고 있습니다.<br><br>
+      각 프로젝트는 단순한 의뢰가 아닌 파트너십으로 접근합니다.
+      전략적 사고와 감각적인 실행을 통해
+      브랜드의 진짜 이야기를 시각적으로 구현합니다.
+    </p>
+  </div>
+  <div class="about-right">
+    <div class="about-stat reveal">
+      <div class="stat-n">08+</div>
+      <div class="stat-l">Years Active</div>
     </div>
-    <div class="about-content fade-up" style="transition-delay:0.15s">
-      <div class="section-label">About Studio</div>
-      <h2 class="about-heading">
-        Design is<br>
-        <em>thinking</em><br>
-        made visual
-      </h2>
-      <p class="about-body">
-        우리는 서울에 기반을 둔 크리에이티브 스튜디오입니다.
-        브랜드 아이덴티티, 디지털 경험, 그리고 모션 디자인 전반에 걸쳐
-        클라이언트와 긴밀히 협력하여 예외적인 결과물을 만들어냅니다.<br><br>
-        스튜디오는 단순한 에이전시가 아닙니다. 우리는 파트너입니다.
-        각 프로젝트는 처음부터 끝까지 전략적으로 접근하며,
-        디자인 너머의 가치를 추구합니다.
-      </p>
-      <div class="about-stats">
-        <div>
-          <div class="stat-num">08+</div>
-          <div class="stat-label">Years of experience</div>
-        </div>
-        <div>
-          <div class="stat-num">60+</div>
-          <div class="stat-label">Projects completed</div>
-        </div>
-        <div>
-          <div class="stat-num">12</div>
-          <div class="stat-label">Design awards</div>
-        </div>
-        <div>
-          <div class="stat-num">40+</div>
-          <div class="stat-label">Happy clients</div>
-        </div>
-      </div>
+    <div class="about-stat reveal" style="transition-delay:.06s">
+      <div class="stat-n">60+</div>
+      <div class="stat-l">Projects</div>
     </div>
-  </section>
-
-  <!-- ── Contact ───────────────────────────────────────────── -->
-  <section class="contact">
-    <div class="section-label fade-up">Get in Touch</div>
-    <h2 class="contact-heading fade-up" style="transition-delay:0.1s">
-      Let's work<br>
-      <em>together</em>
-    </h2>
-    <a href="mailto:hello@studio.kr" class="contact-email fade-up" style="transition-delay:0.2s">
-      hello@studio.kr
-    </a>
-    <a href="mailto:hello@studio.kr" class="contact-cta fade-up" style="transition-delay:0.25s">
-      Start a project
-      <span class="contact-cta-arrow">→</span>
-    </a>
-  </section>
-
-  <!-- ── Footer ───────────────────────────────────────────── -->
-  <footer>
-    <div class="footer-copy">© 2024 Studio Creative. All rights reserved.</div>
-    <div class="footer-links">
-      <a href="#">Instagram</a>
-      <a href="#">Behance</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">Twitter</a>
+    <div class="about-stat reveal" style="transition-delay:.12s">
+      <div class="stat-n">12</div>
+      <div class="stat-l">Awards</div>
     </div>
-  </footer>
+    <div class="about-stat reveal" style="transition-delay:.18s">
+      <div class="stat-n">40+</div>
+      <div class="stat-l">Clients</div>
+    </div>
+  </div>
+</div>
 
-  <!-- ── Scripts ───────────────────────────────────────────── -->
-  <script>
-    // ── Clock ──────────────────────────────────────────────
-    function updateTime() {
-      const now = new Date();
-      const opts = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Seoul' };
-      const timeStr = new Intl.DateTimeFormat('ko-KR', opts).format(now);
-      document.getElementById('navTime').textContent = timeStr + ' KST';
+<!-- ── Contact ──────────────────────────────────────────── -->
+<div class="contact-band" id="contact">
+  <p class="contact-pre reveal">New Business</p>
+  <h2 class="contact-big reveal" style="transition-delay:.08s">
+    Let's work<br>together
+  </h2>
+  <a href="mailto:hello@studio.kr" class="contact-email reveal" style="transition-delay:.16s">
+    hello@studio.kr
+  </a>
+</div>
+
+<!-- ── Footer ───────────────────────────────────────────── -->
+<footer>
+  <div class="footer-left">© 2024 Studio Creative</div>
+  <div class="footer-center">Seoul, KR — GMT+9</div>
+  <div class="footer-right">
+    <a href="#">Instagram</a>
+    <a href="#">Behance</a>
+    <a href="#">LinkedIn</a>
+  </div>
+</footer>
+
+<script>
+  /* ── Clock ────────────────────────────────────────────── */
+  const timeEl = document.getElementById('navTime');
+  setInterval(() => {
+    const t = new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:'Asia/Seoul'});
+    timeEl.textContent = t;
+  }, 1000);
+
+  /* ── Theme toggle ─────────────────────────────────────── */
+  const btn = document.getElementById('themeBtn');
+  const root = document.documentElement;
+  btn.addEventListener('click', () => {
+    const dark = root.dataset.theme === 'dark';
+    root.dataset.theme = dark ? 'light' : 'dark';
+    btn.textContent = dark ? 'Dark' : 'Light';
+  });
+
+  /* ── Cursor ───────────────────────────────────────────── */
+  const cur = document.getElementById('cursor');
+  let mx=0, my=0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left = mx+'px';
+    cur.style.top  = my+'px';
+  });
+  document.querySelectorAll('a,button,.work-item,.theme-toggle').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('expand'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('expand'));
+  });
+
+  /* ── Hover image ──────────────────────────────────────── */
+  const hoverBox = document.getElementById('hover-img');
+  const hoverImg = document.getElementById('hover-img-el');
+  let animId;
+  let hx=0, hy=0;
+
+  function followCursor() {
+    hx += (mx - hx) * 0.1;
+    hy += (my - hy) * 0.1;
+    hoverBox.style.left = hx + 'px';
+    hoverBox.style.top  = hy + 'px';
+    animId = requestAnimationFrame(followCursor);
+  }
+  followCursor();
+
+  document.querySelectorAll('.work-item[data-img]').forEach(item => {
+    const src = item.dataset.img;
+    item.addEventListener('mouseenter', () => {
+      hoverImg.src = src;
+      hoverBox.classList.add('visible');
+    });
+    item.addEventListener('mouseleave', () => {
+      hoverBox.classList.remove('visible');
+    });
+  });
+
+  /* ── Typewriter ───────────────────────────────────────── */
+  const lines = ['We design\nexperiences\nthat matter'];
+  const target = document.getElementById('typed-text');
+  let full = lines[0], i = 0;
+  function type() {
+    if (i <= full.length) {
+      target.innerHTML = full.slice(0,i).replace(/\n/g,'<br>');
+      i++;
+      setTimeout(type, i < 5 ? 80 : 45);
     }
-    updateTime();
-    setInterval(updateTime, 1000);
+  }
+  setTimeout(type, 400);
 
-    // ── Cursor ─────────────────────────────────────────────
-    const cursor     = document.getElementById('cursor');
-    const cursorRing = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
-
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-    });
-
-    function animateRing() {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      cursorRing.style.left = rx + 'px';
-      cursorRing.style.top  = ry + 'px';
-      requestAnimationFrame(animateRing);
-    }
-    animateRing();
-
-    const hoverEls = document.querySelectorAll('a, button, .project-item, .service-item, .contact-cta');
-    hoverEls.forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-    });
-
-    // ── Scroll Reveal ──────────────────────────────────────
-    const fadeEls = document.querySelectorAll('.fade-up');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    fadeEls.forEach(el => io.observe(el));
-
-    // First-paint hero
-    document.querySelectorAll('.hero .fade-up').forEach(el => {
-      setTimeout(() => el.classList.add('visible'), 300);
-    });
-  </script>
+  /* ── Scroll reveal ────────────────────────────────────── */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  // hero right visible immediately
+  document.querySelectorAll('.hero .reveal').forEach(el => setTimeout(()=>el.classList.add('on'),600));
+</script>
 </body>
 </html>
