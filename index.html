@@ -27,6 +27,85 @@
     }
 
 
+    /* ── 상단 네비 ── */
+    .top-nav {
+      background: #000;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px 0 17px;
+    }
+
+    .top-nav-title {
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', -apple-system, sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: -0.17px;
+      color: #fff;
+    }
+
+    .top-nav-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-cookie-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-free-cookie {
+      position: absolute;
+      height: 28px;
+      width: auto;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .nav-icon-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-icon-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .nav-icon-btn img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .top-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 8px;
+    }
+
     /* ── 검색바 ── */
     .top-bar {
       background: #000;
@@ -51,8 +130,8 @@
     }
 
     .search-icon {
-      width: 18px;
-      height: 18px;
+      width: 28px;
+      height: 28px;
       flex-shrink: 0;
     }
 
@@ -146,7 +225,7 @@
     .content {
       flex: 1;
       background: #121212;
-      padding: 20px 16px 0;
+      padding: 20px 16px 90px;
     }
 
     /* ── 검색 기록 ── */
@@ -178,6 +257,19 @@
       flex-wrap: wrap;
       gap: 6px;
       margin-bottom: 28px;
+      min-height: 60px;
+      align-content: flex-start;
+    }
+
+    .history-empty {
+      width: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      font-size: 14px;
+      color: #888;
+      height: 60px;
     }
 
     .chip {
@@ -247,10 +339,26 @@
     .info-icon img { display: block; }
 
     /* ── 웹툰 카드 그리드 ── */
+    /* ── GNB ── */
+    .gnb {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 390px;
+      z-index: 100;
+    }
+    .gnb img {
+      width: 100%;
+      display: block;
+    }
+
     .card-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      column-gap: 8px;
+      row-gap: 18px;
     }
 
     .card {
@@ -321,20 +429,30 @@
 <body>
 <div class="phone">
 
+  <!-- 상단 네비 -->
+  <div class="top-nav">
+    <span class="top-nav-title">검색</span>
+    <div class="top-nav-right">
+      <button class="nav-cookie-wrap">
+        <img src="ic_free_cookie.png" alt="무료쿠키" class="nav-free-cookie" />
+        <img src="ic_nav_cookie.png" alt="쿠키" class="nav-icon-img" />
+      </button>
+      <button class="nav-icon-btn"><img src="ic_nav_alert.png" alt="알림" /></button>
+      <button class="nav-icon-btn"><img src="ic_nav_my.png" alt="내 정보" /></button>
+    </div>
+  </div>
+
   <!-- 검색바 -->
   <div class="top-bar">
     <div class="search-row">
       <div class="search-input-wrap">
+        <img class="search-icon" src="ic_nav_right_search.png" alt="검색" />
         <div class="input-area">
           <input class="search-input" id="searchInput" type="search" autocomplete="off" />
           <div class="rolling-placeholder" id="rollingPlaceholder">
             <div class="rolling-track" id="rollingTrack"></div>
           </div>
         </div>
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
-          <circle cx="11" cy="11" r="7"/>
-          <line x1="16.5" y1="16.5" x2="22" y2="22"/>
-        </svg>
       </div>
     </div>
 
@@ -362,6 +480,7 @@
     </div>
 
     <div class="history-chips" id="historyChips">
+      <div class="history-empty" id="historyEmpty">검색 기록이 없습니다</div>
       <div class="chip">
         <span>내 남편과 결혼해줘</span>
         <span class="chip-remove" onclick="removeChip(this)"><img src="ic_delete_search_close.png" width="14" height="14" /></span>
@@ -375,18 +494,18 @@
     <!-- 추천 섹션 -->
     <div class="recommend-section">
       <div class="recommend-header">
-        <div class="recommend-text-wrap">
-          <span class="recommend-username">series111님</span>
-          <span class="recommend-sub">최신 이야기를 놓치고 계신거 같아요!</span>
-        </div>
-        <div class="info-icon"><img src="ic_info_action.png" width="20" height="20" /></div>
+        <span class="recommend-sub">최신 이야기를 놓치고 계신거 같아요!</span>
       </div>
-
       <div class="card-grid" id="cardGrid"></div>
     </div>
 
   </div>
 </div>
+
+  <!-- GNB -->
+  <div class="gnb">
+    <img src="gnb.png" alt="GNB" />
+  </div>
 
 <script>
   // 3x9 카드 그리드 생성
@@ -494,8 +613,15 @@
   })();
 
   // 검색 기록
-  function removeChip(btn) { btn.closest('.chip').remove(); }
-  function clearHistory()  { document.getElementById('historyChips').innerHTML = ''; }
+  function checkEmpty() {
+    const chips = document.querySelectorAll('#historyChips .chip');
+    document.getElementById('historyEmpty').style.display = chips.length === 0 ? 'flex' : 'none';
+  }
+  function removeChip(btn) { btn.closest('.chip').remove(); checkEmpty(); }
+  function clearHistory()  {
+    document.querySelectorAll('#historyChips .chip').forEach(c => c.remove());
+    checkEmpty();
+  }
 
   document.getElementById('searchInput').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
