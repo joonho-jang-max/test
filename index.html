@@ -390,6 +390,7 @@
       border: none;
       color: #fff;
       font-size: 13px;
+      font-weight: 700;
       font-family: 'Pretendard', -apple-system, sans-serif;
       padding: 0 10px;
       height: 32px;
@@ -695,14 +696,10 @@
         <div class="bts-spinner"></div>
         <button class="genre-tab genre-tab-bts"><img src="bts.png" alt="" />BTS THE CITY</button>
       </div>
-      <button class="genre-tab">판타지</button>
-      <button class="genre-tab">무협</button>
-      <button class="genre-tab">로맨스</button>
-      <button class="genre-tab">로맨스판타지</button>
-      <button class="genre-tab">로판</button>
-      <button class="genre-tab">현대물</button>
-      <button class="genre-tab">BL</button>
-      <button class="genre-tab">스포츠</button>
+      <button class="genre-tab">신작</button>
+      <button class="genre-tab">레전드</button>
+      <button class="genre-tab">시리즈</button>
+      <button class="genre-tab">독점</button>
     </div>
   </div>
 
@@ -795,6 +792,7 @@
   function showEventOverlay(imgIdx) {
     document.getElementById('eventOverlayImg').src = PROMO_IMAGES[imgIdx] || PROMO_IMAGES[0];
     document.querySelector('.phone').classList.add('event-open');
+    document.getElementById('searchInput').blur();
   }
   function closeEventOverlay() {
     document.querySelector('.phone').classList.remove('event-open');
