@@ -664,7 +664,7 @@
   <div class="top-nav">
     <span class="top-nav-title">검색</span>
     <div class="top-nav-right">
-      <button class="nav-icon-btn"><img src="쿠키오븐_angle2.png" alt="쿠키" style="width:22px;height:22px;" /></button>
+      <button class="nav-icon-btn"><img src="쿠키오븐_angle2.png" alt="쿠키" style="width:20px;height:20px;" /></button>
       <button class="nav-icon-btn"><img src="ic_nav_alert.png" alt="알림" /></button>
       <button class="nav-icon-btn"><img src="ic_nav_my.png" alt="내 정보" /></button>
     </div>
@@ -800,13 +800,19 @@
 
   // 이벤트 페이지 푸시
   const PROMO_IMAGES = ['울빌.png', '단행본세트관.jpg', '마크다운.jpg'];
-  function showEventOverlay(imgIdx) {
+  let eventFromSearch = false;
+
+  function showEventOverlay(imgIdx, fromSearch) {
+    eventFromSearch = fromSearch;
     document.getElementById('eventOverlayImg').src = PROMO_IMAGES[imgIdx] || PROMO_IMAGES[0];
     document.querySelector('.phone').classList.add('event-open');
     document.getElementById('searchInput').blur();
   }
   function closeEventOverlay() {
     document.querySelector('.phone').classList.remove('event-open');
+    if (!eventFromSearch) {
+      cancelSearch();
+    }
   }
 
   // 플레이스홀더 롤링 (4.5초)
@@ -987,10 +993,11 @@
 
   function doSearch() {
     const input = document.getElementById('searchInput');
+    const wasSearchActive = document.querySelector('.search-row').classList.contains('active');
     input.focus();
     const val = input.value.trim();
     if (!val) {
-      showEventOverlay(rolling.getIdx());
+      showEventOverlay(rolling.getIdx(), wasSearchActive);
       return;
     }
     const chips = document.getElementById('historyChips');
@@ -1007,7 +1014,7 @@
   document.getElementById('searchInput').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
     const val = e.target.value.trim();
-    if (!val) { showEventOverlay(rolling.getIdx()); return; }
+    if (!val) { showEventOverlay(rolling.getIdx(), true); return; }
     doSearch();
   });
 </script>
