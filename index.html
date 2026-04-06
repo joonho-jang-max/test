@@ -24,32 +24,41 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
     }
 
-
-    /* ── 이벤트 오버레이 ── */
-    .event-overlay {
-      position: fixed;
-      top: 0; left: 50%; bottom: 0;
-      width: 100%;
-      max-width: 390px;
-      transform: translateX(100%);
-      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-      z-index: 200;
+    /* ── 페이지 푸시 ── */
+    .page-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+      will-change: transform;
+    }
+    .phone.event-open .page-main {
+      transform: translateX(-30%);
+    }
+    .page-event {
+      position: absolute;
+      inset: 0;
       background: #121212;
+      transform: translateX(100%);
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+      will-change: transform;
+      z-index: 100;
       overflow-y: auto;
     }
-    .event-overlay.visible {
+    .phone.event-open .page-event {
       transform: translateX(0);
     }
-    .event-overlay-img {
+    .page-event-img {
       width: 100%;
       display: block;
     }
-    .event-overlay-close {
-      position: fixed;
+    .page-event-back {
+      position: sticky;
       top: 16px;
-      right: calc(50% - 390px/2 + 16px);
+      left: 16px;
       width: 36px;
       height: 36px;
       background: rgba(0,0,0,0.5);
@@ -59,7 +68,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 201;
+      z-index: 101;
+      margin: 16px 0 0 16px;
     }
 
     /* ── 상단 네비 ── */
@@ -441,6 +451,15 @@
       color: #FF00A8;
     }
 
+    /* ── 검색 패널 (포커스 시 기록 표시) ── */
+    #searchPanel {
+      display: none;
+      flex: 1;
+      background: #121212;
+      padding: 12px 16px 32px;
+    }
+    #searchPanel.visible { display: block; }
+
     /* ── 본문 ── */
     .content {
       flex: 1;
@@ -634,6 +653,7 @@
 </head>
 <body>
 <div class="phone">
+<div class="page-main">
 
   <!-- 상단 네비 -->
   <div class="top-nav">
@@ -701,12 +721,22 @@
       </div>
     </div>
 
-    <!-- 검색 기록 -->
+    <!-- 추천 섹션 -->
+    <div class="recommend-section">
+      <div class="recommend-header">
+        <span class="recommend-sub">최신 이야기를 놓치고 계신거 같아요!</span>
+      </div>
+      <div class="card-grid" id="cardGrid"></div>
+    </div>
+
+  </div>
+
+  <!-- 검색 패널: 포커스 시 검색 기록 표시 -->
+  <div id="searchPanel">
     <div class="section-header">
       <span class="section-title">검색 기록</span>
       <button class="delete-all" onclick="clearHistory()">전체 삭제</button>
     </div>
-
     <div class="history-chips" id="historyChips">
       <div class="history-empty" id="historyEmpty">검색 기록이 없습니다</div>
       <div class="chip">
@@ -718,28 +748,22 @@
         <span class="chip-remove" onclick="removeChip(this)"><img src="ic_delete_search_close.png" width="14" height="14" /></span>
       </div>
     </div>
-
-    <!-- 추천 섹션 -->
-    <div class="recommend-section">
-      <div class="recommend-header">
-        <span class="recommend-sub">최신 이야기를 놓치고 계신거 같아요!</span>
-      </div>
-      <div class="card-grid" id="cardGrid"></div>
-    </div>
-
   </div>
-</div>
 
-<!-- 이벤트 이미지 오버레이 -->
-<div class="event-overlay" id="eventOverlay">
-  <button class="event-overlay-close" onclick="closeEventOverlay()">
+</div><!-- /page-main -->
+
+<!-- 이벤트 페이지 (페이지 푸시) -->
+<div class="page-event" id="pageEvent">
+  <button class="page-event-back" onclick="closeEventOverlay()">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <line x1="6" y1="6" x2="18" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
       <line x1="18" y1="6" x2="6" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
     </svg>
   </button>
-  <img class="event-overlay-img" id="eventOverlayImg" src="" alt="" />
+  <img class="page-event-img" id="eventOverlayImg" src="" alt="" />
 </div>
+
+</div><!-- /phone -->
 
 <script>
   // 3x9 카드 그리드 생성
@@ -766,15 +790,14 @@
     }
   })();
 
-  // 이벤트 오버레이
+  // 이벤트 페이지 푸시
   const PROMO_IMAGES = ['울빌.png', '단행본세트관.jpg', '마크다운.jpg'];
   function showEventOverlay(imgIdx) {
-    const overlay = document.getElementById('eventOverlay');
     document.getElementById('eventOverlayImg').src = PROMO_IMAGES[imgIdx] || PROMO_IMAGES[0];
-    overlay.classList.add('visible');
+    document.querySelector('.phone').classList.add('event-open');
   }
   function closeEventOverlay() {
-    document.getElementById('eventOverlay').classList.remove('visible');
+    document.querySelector('.phone').classList.remove('event-open');
   }
 
   // 플레이스홀더 롤링 (4.5초)
@@ -906,6 +929,7 @@
     input.focus();
     document.querySelector('.search-row').classList.remove('has-value');
     document.getElementById('searchResults').classList.remove('visible');
+    document.getElementById('searchPanel').classList.add('visible');
     document.getElementById('rollingPlaceholder').style.visibility = 'visible';
   }
 
@@ -915,6 +939,7 @@
     input.blur();
     document.querySelector('.search-row').classList.remove('active');
     document.getElementById('searchResults').classList.remove('visible');
+    document.getElementById('searchPanel').classList.remove('visible');
     document.getElementById('rollingPlaceholder').style.visibility = 'visible';
     document.querySelector('.content').style.display = '';
     document.getElementById('genreTabs').style.display = '';
@@ -924,6 +949,7 @@
     document.querySelector('.search-row').classList.add('active');
     document.querySelector('.content').style.display = 'none';
     document.getElementById('genreTabs').style.display = 'none';
+    document.getElementById('searchPanel').classList.add('visible');
   });
 
   document.getElementById('searchInput').addEventListener('input', e => {
@@ -931,7 +957,13 @@
     const row = document.querySelector('.search-row');
     document.getElementById('rollingPlaceholder').style.visibility = val ? 'hidden' : 'visible';
     row.classList.toggle('has-value', !!val);
-    showResults(val);
+    if (val) {
+      document.getElementById('searchPanel').classList.remove('visible');
+      showResults(val);
+    } else {
+      document.getElementById('searchResults').classList.remove('visible');
+      document.getElementById('searchPanel').classList.add('visible');
+    }
   });
 
   // 검색 기록
