@@ -27,6 +27,41 @@
     }
 
 
+    /* ── 이벤트 오버레이 ── */
+    .event-overlay {
+      position: fixed;
+      top: 0; left: 50%; bottom: 0;
+      width: 100%;
+      max-width: 390px;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      z-index: 200;
+      background: #121212;
+      overflow-y: auto;
+    }
+    .event-overlay.visible {
+      transform: translateX(0);
+    }
+    .event-overlay-img {
+      width: 100%;
+      display: block;
+    }
+    .event-overlay-close {
+      position: fixed;
+      top: 16px;
+      right: calc(50% - 390px/2 + 16px);
+      width: 36px;
+      height: 36px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 201;
+    }
+
     /* ── 상단 네비 ── */
     .top-nav {
       background: #000;
@@ -695,6 +730,16 @@
   </div>
 </div>
 
+<!-- 이벤트 이미지 오버레이 -->
+<div class="event-overlay" id="eventOverlay">
+  <button class="event-overlay-close" onclick="closeEventOverlay()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <line x1="6" y1="6" x2="18" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="18" y1="6" x2="6" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <img class="event-overlay-img" id="eventOverlayImg" src="" alt="" />
+</div>
 
 <script>
   // 3x9 카드 그리드 생성
@@ -721,15 +766,25 @@
     }
   })();
 
-  // 플레이스홀더 롤링 (3초)
-  (function () {
+  // 이벤트 오버레이
+  const PROMO_IMAGES = ['울빌.png', '단행본세트관.jpg', '마크다운.jpg'];
+  function showEventOverlay(imgIdx) {
+    const overlay = document.getElementById('eventOverlay');
+    document.getElementById('eventOverlayImg').src = PROMO_IMAGES[imgIdx] || PROMO_IMAGES[0];
+    overlay.classList.add('visible');
+  }
+  function closeEventOverlay() {
+    document.getElementById('eventOverlay').classList.remove('visible');
+  }
+
+  // 플레이스홀더 롤링 (4.5초)
+  const rolling = (function () {
     const texts = [
       '울어봐 빌어도 좋고 무료 이벤트! 🥹',
       '오늘만 전작 무료 공개 이벤트! 🎁',
       '신작 로맨스 첫화 무료로 만나보세요! 💘'
     ];
     const ITEM_H = 44;
-    const wrap = document.getElementById('rollingPlaceholder');
     const track = document.getElementById('rollingTrack');
     const input = document.getElementById('searchInput');
 
@@ -764,6 +819,8 @@
       if (input.value) { stop(); }
       else             { start(); }
     });
+
+    return { getIdx: () => idx };
   })();
 
   // 장르 탭 플리킹
@@ -892,7 +949,10 @@
     const input = document.getElementById('searchInput');
     input.focus();
     const val = input.value.trim();
-    if (!val) return;
+    if (!val) {
+      showEventOverlay(rolling.getIdx());
+      return;
+    }
     const chips = document.getElementById('historyChips');
     const chip = document.createElement('div');
     chip.className = 'chip';
@@ -906,6 +966,8 @@
 
   document.getElementById('searchInput').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
+    const val = e.target.value.trim();
+    if (!val) { showEventOverlay(rolling.getIdx()); return; }
     doSearch();
   });
 </script>
