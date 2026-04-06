@@ -847,11 +847,13 @@
     document.getElementById('searchResults').classList.remove('visible');
     document.getElementById('rollingPlaceholder').style.visibility = 'visible';
     document.querySelector('.content').style.display = '';
+    document.getElementById('genreTabs').style.display = '';
   }
 
   document.getElementById('searchInput').addEventListener('focus', () => {
     document.querySelector('.search-row').classList.add('active');
     document.querySelector('.content').style.display = 'none';
+    document.getElementById('genreTabs').style.display = 'none';
   });
 
   document.getElementById('searchInput').addEventListener('input', e => {
