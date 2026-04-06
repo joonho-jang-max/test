@@ -279,22 +279,21 @@
     .genre-tabs.dragging { cursor: grabbing; }
 
     /* ── BTS 프로모션 태그 회전 그라데이션 테두리 ── */
-    .genre-tab-bts {
+    .bts-border-wrap {
+      flex-shrink: 0;
       position: relative;
-      padding: 0;
-      background: transparent !important;
-      border: none !important;
       border-radius: 4px;
+      padding: 0.8px;
       overflow: hidden;
     }
 
-    .genre-tab-bts::before {
-      content: '';
+    .bts-spinner {
       position: absolute;
-      width: 300%;
-      height: 300%;
-      top: -100%;
-      left: -100%;
+      inset: 0;
+      width: 400%;
+      height: 400%;
+      top: -150%;
+      left: -150%;
       background: conic-gradient(
         #FF00A8 0deg,
         #D400FF 90deg,
@@ -303,28 +302,25 @@
         #FF00A8 360deg
       );
       animation: bts-spin 3s linear infinite;
+      will-change: transform;
     }
 
-    .genre-tab-bts::after {
-      content: '';
-      position: absolute;
-      inset: 0.8px;
-      background: #1C1C1C;
-      border-radius: 3px;
-    }
-
-    .genre-tab-bts-inner {
+    .genre-tab-bts {
       position: relative;
       z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 0 10px;
-      height: 32px;
-      white-space: nowrap;
+      background: #1C1C1C;
+      border: none;
+      border-radius: 3px;
       color: #fff;
       font-size: 13px;
       font-family: 'Pretendard', -apple-system, sans-serif;
+      padding: 0 10px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
     @keyframes bts-spin {
@@ -627,9 +623,10 @@
 
     <!-- 장르 탭 -->
     <div class="genre-tabs" id="genreTabs">
-      <button class="genre-tab genre-tab-bts">
-        <span class="genre-tab-bts-inner"><img src="bts.png" alt="" />BTS THE CITY</span>
-      </button>
+      <div class="bts-border-wrap">
+        <div class="bts-spinner"></div>
+        <button class="genre-tab genre-tab-bts"><img src="bts.png" alt="" />BTS THE CITY</button>
+      </div>
       <button class="genre-tab">판타지</button>
       <button class="genre-tab">무협</button>
       <button class="genre-tab">로맨스</button>
