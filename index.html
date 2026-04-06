@@ -291,15 +291,24 @@
     .genre-tab-bts::before {
       content: '';
       position: absolute;
-      inset: -100%;
-      background: conic-gradient(from 0deg, #FF00A8, #D400FF, #FF44CC, #FF00A8);
+      width: 300%;
+      height: 300%;
+      top: -100%;
+      left: -100%;
+      background: conic-gradient(
+        #FF00A8 0deg,
+        #D400FF 90deg,
+        #FF44CC 180deg,
+        #D400FF 270deg,
+        #FF00A8 360deg
+      );
       animation: bts-spin 3s linear infinite;
     }
 
     .genre-tab-bts::after {
       content: '';
       position: absolute;
-      inset: 1.5px;
+      inset: 0.8px;
       background: #1C1C1C;
       border-radius: 3px;
     }
@@ -319,7 +328,8 @@
     }
 
     @keyframes bts-spin {
-      to { transform: rotate(360deg); }
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
     }
 
     .genre-tab {
