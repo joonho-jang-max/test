@@ -223,18 +223,46 @@
 
     /* ── 미니배너 ── */
     .minibanner {
-      background: #1a1a1a;
-      margin: 0 16px 0;
-      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       height: 52px;
-      overflow: hidden;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0 12px;
+      cursor: pointer;
       flex-shrink: 0;
     }
-    .minibanner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+
+    .minibanner-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .minibanner-texts {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .minibanner-title {
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', -apple-system, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 18px;
+      letter-spacing: -0.14px;
+      color: #F8F8F8;
+    }
+
+    .minibanner-sub {
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', -apple-system, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      letter-spacing: -0.12px;
+      color: #FF00A8;
     }
 
     /* ── 본문 ── */
@@ -485,15 +513,17 @@
     </div>
   </div>
 
-  <!-- 미니배너 -->
-  <div style="background:#000; padding: 8px 16px 0;">
-    <div class="minibanner">
-      <img src="minibanner.png" alt="미니배너" />
-    </div>
-  </div>
-
   <!-- 본문 -->
   <div class="content">
+
+    <!-- 미니배너 -->
+    <div class="minibanner" style="margin-bottom: 16px;">
+      <img class="minibanner-img" src="square.png" alt="" />
+      <div class="minibanner-texts">
+        <span class="minibanner-title">미니배너 타이틀 최대 30자</span>
+        <span class="minibanner-sub">서브타이틀 최대 25자, 어드민 컬러입력 ›</span>
+      </div>
+    </div>
 
     <!-- 검색 기록 -->
     <div class="section-header">
