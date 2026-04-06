@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <title>웹툰 검색</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
   <style>
@@ -225,7 +225,7 @@
     .content {
       flex: 1;
       background: #121212;
-      padding: 20px 16px 90px;
+      padding: 20px 16px calc(90px + env(safe-area-inset-bottom));
     }
 
     /* ── 검색 기록 ── */
@@ -348,6 +348,8 @@
       width: 100%;
       max-width: 390px;
       z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+      background: #111;
     }
     .gnb img {
       width: 100%;
@@ -433,10 +435,7 @@
   <div class="top-nav">
     <span class="top-nav-title">검색</span>
     <div class="top-nav-right">
-      <button class="nav-cookie-wrap">
-        <img src="ic_free_cookie.png" alt="무료쿠키" class="nav-free-cookie" />
-        <img src="ic_nav_cookie.png" alt="쿠키" class="nav-icon-img" />
-      </button>
+      <button class="nav-icon-btn"><img src="ic_nav_cookie.png" alt="쿠키" /></button>
       <button class="nav-icon-btn"><img src="ic_nav_alert.png" alt="알림" /></button>
       <button class="nav-icon-btn"><img src="ic_nav_my.png" alt="내 정보" /></button>
     </div>
