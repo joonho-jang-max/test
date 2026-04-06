@@ -349,29 +349,24 @@
     .genre-tabs.dragging { cursor: grabbing; }
 
     /* ── BTS 프로모션 태그 회전 그라데이션 테두리 ── */
+    @property --bts-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    @keyframes bts-spin {
+      to { --bts-angle: 360deg; }
+    }
+
     .bts-border-wrap {
       flex-shrink: 0;
       position: relative;
       border-radius: 4px;
-      padding: 0.8px;
+      padding: 1px;
       overflow: hidden;
-    }
-
-    .bts-spinner {
-      position: absolute;
-      width: 400%;
-      height: 400%;
-      top: -150%;
-      left: -150%;
-      background: conic-gradient(
-        #FF00A8 0deg,
-        #D400FF 90deg,
-        #FF44CC 180deg,
-        #D400FF 270deg,
-        #FF00A8 360deg
-      );
+      background: conic-gradient(from var(--bts-angle), #FF00A8, #D400FF, #FF44CC, #D400FF, #FF00A8);
       animation: bts-spin 3s linear infinite;
-      will-change: transform;
     }
 
     .genre-tab-bts {
@@ -390,11 +385,6 @@
       gap: 5px;
       white-space: nowrap;
       cursor: pointer;
-    }
-
-    @keyframes bts-spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
     }
 
     .genre-tab {
@@ -707,7 +697,6 @@
     <!-- 장르 탭 -->
     <div class="genre-tabs" id="genreTabs">
       <div class="bts-border-wrap">
-        <div class="bts-spinner"></div>
         <button class="genre-tab genre-tab-bts"><img src="bts.png" alt="" />BTS THE CITY</button>
       </div>
       <button class="genre-tab">신작</button>
