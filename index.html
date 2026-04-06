@@ -182,6 +182,84 @@
       flex-shrink: 0;
     }
 
+    .search-clear {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-cancel {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      cursor: pointer;
+      padding: 0 0 0 10px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* 검색 활성화 상태 */
+    .search-row.active .search-clear { display: flex; }
+    .search-row.active .search-cancel { display: block; }
+
+    /* ── 검색결과 패널 ── */
+    .search-results {
+      display: none;
+      flex-direction: column;
+      background: #121212;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .search-results.visible {
+      display: flex;
+    }
+
+    .search-result-section {
+      padding: 14px 16px 4px;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+    }
+
+    .search-result-item:active { background: rgba(255,255,255,0.05); }
+
+    .search-result-text {
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', -apple-system, sans-serif;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .search-result-text mark {
+      background: none;
+      color: #00C73C;
+      font-weight: 600;
+    }
+
+    .search-result-badge {
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      font-size: 12px;
+      color: #666;
+      flex-shrink: 0;
+    }
+
     /* ── 장르 탭 ── */
     .genre-tabs {
       background: #000;
@@ -480,7 +558,15 @@
             <div class="rolling-track" id="rollingTrack"></div>
           </div>
         </div>
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="8" fill="rgba(255,255,255,0.3)"/>
+            <line x1="5" y1="5" x2="11" y2="11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="11" y1="5" x2="5" y2="11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
+      <button class="search-cancel" id="searchCancel" onclick="cancelSearch()">취소</button>
     </div>
 
     <!-- 장르 탭 -->
@@ -496,6 +582,9 @@
       <button class="genre-tab">스포츠</button>
     </div>
   </div>
+
+  <!-- 검색결과 패널 -->
+  <div class="search-results" id="searchResults"></div>
 
   <!-- 본문 -->
   <div class="content">
@@ -604,8 +693,8 @@
     start();
 
     input.addEventListener('input', () => {
-      if (input.value) { wrap.style.visibility = 'hidden'; stop(); }
-      else             { wrap.style.visibility = 'visible'; start(); }
+      if (input.value) { stop(); }
+      else             { start(); }
     });
   })();
 
@@ -643,6 +732,77 @@
       if (Math.abs(el.scrollLeft - scrollLeft) > 5) e.stopPropagation();
     }, true);
   })();
+
+  // 검색어 자동완성
+  const SEARCH_DATA = [
+    { title: '귀멸의 칼날', type: 'COMIX' },
+    { title: '귀멸의 칼날: 무한열차', type: 'NOVEL' },
+    { title: '원피스', type: 'COMIX' },
+    { title: '원피스 단행본', type: 'COMIX' },
+    { title: '드래곤볼Z', type: 'COMIX' },
+    { title: '드래곤볼 슈퍼', type: 'COMIX' },
+    { title: '황천의 츠가이', type: 'COMIX' },
+    { title: '사카모토 데이즈', type: 'COMIX' },
+    { title: '내 남편과 결혼해줘', type: 'NOVEL' },
+    { title: '내 남편', type: 'NOVEL' },
+    { title: '김부장', type: 'NOVEL' },
+    { title: '로맨스 판타지', type: 'NOVEL' },
+    { title: '로맨스 소설', type: 'NOVEL' },
+    { title: '로판 추천', type: '' },
+  ];
+
+  function highlight(text, query) {
+    if (!query) return text;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    return text.slice(0, idx) +
+      `<mark>${text.slice(idx, idx + query.length)}</mark>` +
+      text.slice(idx + query.length);
+  }
+
+  function showResults(query) {
+    const panel = document.getElementById('searchResults');
+    const results = SEARCH_DATA.filter(d =>
+      d.title.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 8);
+    if (!query || results.length === 0) { panel.classList.remove('visible'); return; }
+    panel.innerHTML = `<div class="search-result-section">작품</div>` +
+      results.map(r => `
+        <div class="search-result-item">
+          <span class="search-result-text">${highlight(r.title, query)}</span>
+          ${r.type ? `<span class="search-result-badge">${r.type}</span>` : ''}
+        </div>`).join('');
+    panel.classList.add('visible');
+  }
+
+  function clearSearch() {
+    const input = document.getElementById('searchInput');
+    input.value = '';
+    input.focus();
+    document.getElementById('searchResults').classList.remove('visible');
+    document.getElementById('rollingPlaceholder').style.visibility = 'visible';
+  }
+
+  function cancelSearch() {
+    const input = document.getElementById('searchInput');
+    input.value = '';
+    input.blur();
+    document.querySelector('.search-row').classList.remove('active');
+    document.getElementById('searchResults').classList.remove('visible');
+    document.getElementById('rollingPlaceholder').style.visibility = 'visible';
+    document.querySelector('.content').style.display = '';
+  }
+
+  document.getElementById('searchInput').addEventListener('focus', () => {
+    document.querySelector('.search-row').classList.add('active');
+    document.querySelector('.content').style.display = 'none';
+  });
+
+  document.getElementById('searchInput').addEventListener('input', e => {
+    const val = e.target.value;
+    document.getElementById('rollingPlaceholder').style.visibility = val ? 'hidden' : 'visible';
+    showResults(val);
+  });
 
   // 검색 기록
   function checkEmpty() {
