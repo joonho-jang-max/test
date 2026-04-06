@@ -744,18 +744,18 @@
 
     function roll() {
       idx++;
-      track.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
+      track.style.transition = 'transform 0.6s cubic-bezier(0.4,0,0.2,1)';
       track.style.transform = `translateY(-${idx * ITEM_H}px)`;
       if (idx === texts.length) {
         setTimeout(() => {
           track.style.transition = 'none';
           track.style.transform = 'translateY(0)';
           idx = 0;
-        }, 460);
+        }, 620);
       }
     }
 
-    function start() { timer = setInterval(roll, 3000); }
+    function start() { timer = setInterval(roll, 4500); }
     function stop()  { clearInterval(timer); }
 
     start();
