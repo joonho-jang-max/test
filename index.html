@@ -930,9 +930,10 @@
     ).slice(0, 8);
     if (!query || results.length === 0) { panel.classList.remove('visible'); return; }
     panel.innerHTML =
-      results.map(r => `
+      results.map((r, i) => `
         <div class="search-result-item">
           <span class="search-result-text">${highlight(r.title, query)}</span>
+          ${i === 0 ? `<img src="sinjak.png" alt="최강신작" style="height:12px;width:auto;flex-shrink:0;" />` : ''}
         </div>`).join('');
     panel.classList.add('visible');
   }
