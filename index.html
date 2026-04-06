@@ -129,6 +129,17 @@
       height: 44px;
     }
 
+    .search-icon-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
     .search-icon {
       width: 28px;
       height: 28px;
@@ -603,7 +614,6 @@
   <div class="top-bar">
     <div class="search-row">
       <div class="search-input-wrap">
-        <img class="search-icon" src="ic_nav_right_search.png" alt="검색" />
         <div class="input-area">
           <input class="search-input" id="searchInput" type="search" autocomplete="off" />
           <div class="rolling-placeholder" id="rollingPlaceholder">
@@ -616,6 +626,9 @@
             <line x1="5" y1="5" x2="11" y2="11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
             <line x1="11" y1="5" x2="5" y2="11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
+        </button>
+        <button class="search-icon-btn" onclick="doSearch()">
+          <img class="search-icon" src="ic_nav_right_search.png" alt="검색" />
         </button>
       </div>
       <button class="search-cancel" id="searchCancel" onclick="cancelSearch()">취소</button>
@@ -875,17 +888,25 @@
     checkEmpty();
   }
 
-  document.getElementById('searchInput').addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    const val = e.target.value.trim();
+  function doSearch() {
+    const input = document.getElementById('searchInput');
+    input.focus();
+    const val = input.value.trim();
     if (!val) return;
     const chips = document.getElementById('historyChips');
     const chip = document.createElement('div');
     chip.className = 'chip';
     chip.innerHTML = `<span>${val}</span><span class="chip-remove" onclick="removeChip(this)"><img src="ic_delete_search_close.png" width="14" height="14" /></span>`;
     chips.prepend(chip);
-    e.target.value = '';
+    input.value = '';
+    document.querySelector('.search-row').classList.remove('has-value');
     document.getElementById('rollingPlaceholder').style.visibility = 'visible';
+    document.getElementById('searchResults').classList.remove('visible');
+  }
+
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    doSearch();
   });
 </script>
 </body>
