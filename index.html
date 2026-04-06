@@ -130,8 +130,8 @@
     }
 
     .search-icon {
-      width: 28px;
-      height: 28px;
+      width: 18px;
+      height: 18px;
       flex-shrink: 0;
     }
 
@@ -269,7 +269,7 @@
     .content {
       flex: 1;
       background: #121212;
-      padding: 12px 16px calc(90px + env(safe-area-inset-bottom));
+      padding: 12px 16px 32px;
     }
 
     /* ── 검색 기록 ── */
@@ -383,22 +383,6 @@
     .info-icon img { display: block; }
 
     /* ── 웹툰 카드 그리드 ── */
-    /* ── GNB ── */
-    .gnb {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 390px;
-      z-index: 100;
-      padding-bottom: env(safe-area-inset-bottom);
-      background: #111;
-    }
-    .gnb img {
-      width: 100%;
-      display: block;
-    }
 
     .card-grid {
       display: grid;
@@ -554,10 +538,6 @@
   </div>
 </div>
 
-  <!-- GNB -->
-  <div class="gnb">
-    <img src="gnb.png" alt="GNB" />
-  </div>
 
 <script>
   // 3x9 카드 그리드 생성
